@@ -1,0 +1,30 @@
+body { font-family: "Segoe UI", Arial, sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; color: #222; }
+header h1 { color: #0366d6; }
+button { padding: .5rem 1rem; background: #0366d6; color: #fff; border: none; border-radius: 4px; cursor: pointer; transition: box-shadow 0.15s ease, transform 0.12s ease; }
+
+/* Styles for the three action buttons */
+.clickMe {
+  font-size: 1.1rem;
+  padding: 0.75rem 1.25rem;
+  background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+  color: #fff;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(12, 74, 110, 0.15);
+  margin-right: 12px;
+}
+
+/* Remove extra margin after the last button */
+.clickMe:last-child { margin-right: 0; }
+
+.clickMe:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255,255,255,0.6);
+  box-shadow: 0 10px 24px rgba(12,74,110,0.18);
+}
+
+.clickMe:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+}
+#output { margin-top: 1rem; color: #333; }
