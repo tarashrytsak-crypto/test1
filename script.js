@@ -21,3 +21,38 @@ document.getElementById('clickMe3').addEventListener('click', function() {
   const dateLong = now.toLocaleDateString('uk-UA', {year: 'numeric', month: 'long', day: 'numeric'});
   document.getElementById('output').textContent = weekday + ', ' + dateLong + ' о ' + time;
 });
+
+// Cat: moving and prompting after 10s of no interaction
+(function() {
+  const catMessage = document.getElementById('cat-message');
+  const cat = document.getElementById('cat');
+  let catTimer = null;
+
+  function showCatPrompt() {
+    if (catMessage) catMessage.classList.remove('hidden');
+  }
+  function hideCatPrompt() {
+    if (catMessage) catMessage.classList.add('hidden');
+  }
+  function resetCatTimer() {
+    hideCatPrompt();
+    if (catTimer) clearTimeout(catTimer);
+    catTimer = setTimeout(showCatPrompt, 10000);
+  }
+
+  // Start timer on load
+  resetCatTimer();
+
+  // Reset timer on any button click and hide prompt immediately
+  ['clickMe1','clickMe2','clickMe3'].forEach(function(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('click', function() {
+      hideCatPrompt();
+      if (catTimer) clearTimeout(catTimer);
+      // restart timer after interaction
+      catTimer = setTimeout(showCatPrompt, 10000);
+    });
+  });
+
+})();
