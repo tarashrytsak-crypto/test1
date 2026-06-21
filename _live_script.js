@@ -42,34 +42,6 @@ document.getElementById('clickMe3').addEventListener('click', function() {
     if (!mouse || !container) return;
     const cRect = container.getBoundingClientRect();
     const mRect = mouse.getBoundingClientRect();
-    // if cheese exists, move toward it and eat
-    const cheese = container.querySelector('.cheese');
-    if (cheese) {
-      const chRect = cheese.getBoundingClientRect();
-      const mCenterX = (mRect.left - cRect.left) + mRect.width / 2;
-      const mCenterY = (mRect.top - cRect.top) + mRect.height / 2;
-      const chCenterX = (chRect.left - cRect.left) + chRect.width / 2;
-      const chCenterY = (chRect.top - cRect.top) + chRect.height / 2;
-      const dx = chCenterX - mCenterX;
-      const dy = chCenterY - mCenterY;
-      const dist = Math.sqrt(dx*dx + dy*dy) || 1;
-      // move a bigger step toward cheese (faster than base)
-      const stepSize = Math.min(dist, 96); // doubled max step for much faster approach
-      const nx = clamp((mRect.left - cRect.left) + (dx / dist) * stepSize, 0, Math.max(0, cRect.width - mRect.width));
-      const ny = clamp((mRect.top - cRect.top) + (dy / dist) * stepSize, 0, Math.max(0, cRect.height - mRect.height));
-      mouse.style.left = nx + 'px';
-      mouse.style.top = ny + 'px';
-      mouse.style.transform = (dx >= 0) ? 'scaleX(1)' : 'scaleX(-1)';
-      // eat when close
-      if (dist < 36) {
-        cheese.style.transition = 'transform 0.12s ease, opacity 0.12s ease';
-        cheese.style.transform = 'scale(0.2)';
-        cheese.style.opacity = '0';
-        setTimeout(() => { try{ cheese.remove(); } catch(e){} }, 140);
-      }
-      return;
-    }
-    // otherwise random movement
     const maxX = Math.max(0, cRect.width - mRect.width);
     const maxY = Math.max(0, cRect.height - mRect.height);
     const x = Math.random() * maxX;
@@ -82,66 +54,28 @@ document.getElementById('clickMe3').addEventListener('click', function() {
   function scheduleMouse() {
     function step() {
       moveMouseOnce();
-      // if cheese present, move more frequently
-      const cheese = container.querySelector('.cheese');
-      const next = cheese ? (40 + Math.random() * 60) : (100 + Math.random() * 400); // cheese: 40-100ms (faster), else: 100-500ms
+      const next = 350 + Math.random() * 450; // 350-800ms
       timers.push(setTimeout(step, Math.floor(next)));
     }
     step();
   }
 
-  // create food on container click: Shift+click -> cheese for mouse; left -> cat1 food; right -> cat2 food
+  // create food on container click
   if (container) {
     container.addEventListener('click', function(e) {
-      // Shift+click spawns cheese for mouse
       const cRect = container.getBoundingClientRect();
-      if (e.shiftKey) {
-        // remove existing cheese if any
-        const prev = container.querySelector('.cheese');
-        if (prev) prev.remove();
-        const size = 28;
-        const x = e.clientX - cRect.left - size/2;
-        const y = e.clientY - cRect.top - size/2;
-        const ch = document.createElement('div');
-        ch.className = 'cheese';
-        ch.dataset.cheeseId = 'ch' + Date.now();
-        ch.style.left = Math.max(0, Math.min(cRect.width - size, x)) + 'px';
-        ch.style.top = Math.max(0, Math.min(cRect.height - size, y)) + 'px';
-        container.appendChild(ch);
-        return;
-      }
-
-      // normal left-click -> owner1 food
       const size = 18;
       const x = e.clientX - cRect.left - size/2;
       const y = e.clientY - cRect.top - size/2;
       const id = 'f' + Date.now() + Math.floor(Math.random()*1000);
       const el = document.createElement('div');
-      el.className = 'food owner1';
+      el.className = 'food';
       el.dataset.foodId = id;
-      el.dataset.owner = '1';
       el.style.left = Math.max(0, Math.min(cRect.width - size, x)) + 'px';
       el.style.top = Math.max(0, Math.min(cRect.height - size, y)) + 'px';
       container.appendChild(el);
       foods.push(id);
       // small pop animation
-      requestAnimationFrame(() => { el.style.transform = 'scale(1.08)'; setTimeout(()=> el.style.transform='scale(1)',120); });
-    });
-    container.addEventListener('contextmenu', function(e) {
-      e.preventDefault();
-      const cRect = container.getBoundingClientRect();
-      const size = 18;
-      const x = e.clientX - cRect.left - size/2;
-      const y = e.clientY - cRect.top - size/2;
-      const id = 'f' + Date.now() + Math.floor(Math.random()*1000);
-      const el = document.createElement('div');
-      el.className = 'food owner2';
-      el.dataset.foodId = id;
-      el.dataset.owner = '2';
-      el.style.left = Math.max(0, Math.min(cRect.width - size, x)) + 'px';
-      el.style.top = Math.max(0, Math.min(cRect.height - size, y)) + 'px';
-      container.appendChild(el);
-      foods.push(id);
       requestAnimationFrame(() => { el.style.transform = 'scale(1.08)'; setTimeout(()=> el.style.transform='scale(1)',120); });
     });
   }
@@ -151,9 +85,7 @@ document.getElementById('clickMe3').addEventListener('click', function() {
     const cRect = container.getBoundingClientRect();
     const catRect = cat.getBoundingClientRect();
 
-    // determine owner for this cat (cat1 -> '1', cat2 -> '2')
-    const owner = (cat === cat1) ? '1' : '2';
-
+    // if food exists, target the nearest food
     // clean up missing foods
     foods = foods.filter(id => document.querySelector('[data-food-id="' + id + '"]'));
     if (foods.length > 0) {
@@ -165,8 +97,6 @@ document.getElementById('clickMe3').addEventListener('click', function() {
       foods.forEach(id => {
         const f = document.querySelector('[data-food-id="' + id + '"]');
         if (!f) return;
-        // skip food that is not owned by this cat
-        if (f.dataset.owner !== owner) return;
         const fRect = f.getBoundingClientRect();
         const fx = (fRect.left - cRect.left) + fRect.width/2;
         const fy = (fRect.top - cRect.top) + fRect.height/2;
@@ -189,6 +119,7 @@ document.getElementById('clickMe3').addEventListener('click', function() {
         cat.style.transform = (dx >= 0) ? 'scaleX(1)' : 'scaleX(-1)';
         // if close enough, eat it
         if (bestDist < 36) {
+          // remove element with small shrink
           nearestEl.style.transition = 'transform 0.12s ease, opacity 0.12s ease';
           nearestEl.style.transform = 'scale(0.2)';
           nearestEl.style.opacity = '0';
