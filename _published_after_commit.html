@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="test1 — простий статичний сайт">
+  <title>НУУ ТАНЮХА!!!</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header><h1>Вітаю на крутому сайті!</h1></header>
+  <!-- deployed-timestamp: 2026-06-21T17:18:00+03:00 -->
+  <main>
+    <p>Кайфуй від життя на повну</p>
+    <button class="clickMe" id="clickMe1">Поточна година</button>
+    <button class="clickMe" id="clickMe2">Сьогодін</button>
+    <button class="clickMe" id="clickMe3">Повна дата</button>
+    <div id="output"></div>
+    <div id="cat-container" aria-live="polite">
+      <div id="cat" role="img" aria-label="moving cat">
+        <span class="cat-head" aria-hidden="true">🐱</span>
+        <span class="cat-body" aria-hidden="true"></span>
+      </div>
+      <p id="cat-message" class="hidden">ну натискай вже...</p>
+    </div>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>

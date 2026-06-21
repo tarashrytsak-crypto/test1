@@ -60,7 +60,7 @@ document.getElementById('clickMe3').addEventListener('click', function() {
     step();
   }
 
-  // create food on container click
+  // create food on container click: left for cat1, right (contextmenu) for cat2
   if (container) {
     container.addEventListener('click', function(e) {
       const cRect = container.getBoundingClientRect();
@@ -69,13 +69,31 @@ document.getElementById('clickMe3').addEventListener('click', function() {
       const y = e.clientY - cRect.top - size/2;
       const id = 'f' + Date.now() + Math.floor(Math.random()*1000);
       const el = document.createElement('div');
-      el.className = 'food';
+      el.className = 'food owner1';
       el.dataset.foodId = id;
+      el.dataset.owner = '1';
       el.style.left = Math.max(0, Math.min(cRect.width - size, x)) + 'px';
       el.style.top = Math.max(0, Math.min(cRect.height - size, y)) + 'px';
       container.appendChild(el);
       foods.push(id);
       // small pop animation
+      requestAnimationFrame(() => { el.style.transform = 'scale(1.08)'; setTimeout(()=> el.style.transform='scale(1)',120); });
+    });
+    container.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+      const cRect = container.getBoundingClientRect();
+      const size = 18;
+      const x = e.clientX - cRect.left - size/2;
+      const y = e.clientY - cRect.top - size/2;
+      const id = 'f' + Date.now() + Math.floor(Math.random()*1000);
+      const el = document.createElement('div');
+      el.className = 'food owner2';
+      el.dataset.foodId = id;
+      el.dataset.owner = '2';
+      el.style.left = Math.max(0, Math.min(cRect.width - size, x)) + 'px';
+      el.style.top = Math.max(0, Math.min(cRect.height - size, y)) + 'px';
+      container.appendChild(el);
+      foods.push(id);
       requestAnimationFrame(() => { el.style.transform = 'scale(1.08)'; setTimeout(()=> el.style.transform='scale(1)',120); });
     });
   }
@@ -85,7 +103,9 @@ document.getElementById('clickMe3').addEventListener('click', function() {
     const cRect = container.getBoundingClientRect();
     const catRect = cat.getBoundingClientRect();
 
-    // if food exists, target the nearest food
+    // determine owner for this cat (cat1 -> '1', cat2 -> '2')
+    const owner = (cat === cat1) ? '1' : '2';
+
     // clean up missing foods
     foods = foods.filter(id => document.querySelector('[data-food-id="' + id + '"]'));
     if (foods.length > 0) {
@@ -97,6 +117,8 @@ document.getElementById('clickMe3').addEventListener('click', function() {
       foods.forEach(id => {
         const f = document.querySelector('[data-food-id="' + id + '"]');
         if (!f) return;
+        // skip food that is not owned by this cat
+        if (f.dataset.owner !== owner) return;
         const fRect = f.getBoundingClientRect();
         const fx = (fRect.left - cRect.left) + fRect.width/2;
         const fy = (fRect.top - cRect.top) + fRect.height/2;
@@ -119,7 +141,6 @@ document.getElementById('clickMe3').addEventListener('click', function() {
         cat.style.transform = (dx >= 0) ? 'scaleX(1)' : 'scaleX(-1)';
         // if close enough, eat it
         if (bestDist < 36) {
-          // remove element with small shrink
           nearestEl.style.transition = 'transform 0.12s ease, opacity 0.12s ease';
           nearestEl.style.transform = 'scale(0.2)';
           nearestEl.style.opacity = '0';

@@ -147,12 +147,13 @@ body {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #f59e0b;
   box-shadow: 0 4px 8px rgba(0,0,0,0.12);
   z-index: 30;
   transform-origin: center;
   transition: transform 0.12s ease, opacity 0.12s ease;
 }
+.food.owner1 { background: #f59e0b; } /* orange for cat1 */
+.food.owner2 { background: #7c3aed; } /* purple for cat2 */
 
 #cat-message {
   position: absolute;
